@@ -1,0 +1,234 @@
+#Main function that starts the whole library system.
+def start():
+
+    #Initial list of Books.
+    allBooks = [
+        ['9780596007126', "The Earth Inside Out", "Mike B", 2, ['Ali']],
+        ['9780134494166', "The Human Body", "Dave R", 1, []],
+        ['9780321125217', "Human on Earth", "Jordan P", 1, ['David', 'b1', 'user123']]
+    ]
+
+    #List of Borrowed ISBN
+    borrowedISBN = [
+
+    ]
+
+
+    #function to add books to the library.
+    def addBooks():
+
+        #While loop. Checks if '*' and '%' are in the title input.
+        while True:
+            a = 0
+            b = 0
+            name = input("Book name> ")
+            if "*" not in name:
+                a = 1
+            else:
+                print("Invalid book name!")
+            if "%" not in name:
+                b = 1
+            else:
+                print("Invalid book name!")
+            c=a+b
+            if c == 2:
+                break
+
+        #Author name input.
+        author = input("Author name> ")
+
+        #While loop for int edition input.
+        while True:
+            edition = input("Edition> ")
+            if edition.isnumeric():
+                break
+            else:
+                print("Invalid Edition")
+
+        #While loop for isbn input.
+        while True:
+            isbn = str(input("ISBN> "))
+
+            #checks if isbn is a 13 digit long number.
+            if isbn.isnumeric():
+                isbn = int(isbn)
+            else:
+                print("Invalid ISBN!")
+            if len(str(isbn)) != 13:
+                print("Invalid ISBN!")
+            if len(str(isbn)) == 13:
+                break
+
+        #Checks if isbn already exists in list of books.
+        if any([str(isbn) in sublist for sublist in allBooks]):
+            print("Duplicate ISBN is found! Cannot add the book.")
+            printMenu()
+
+        #Determinies sum of isbn digits.
+        total = []
+        isbn = str(isbn)
+        for i in range(len(isbn)):
+            #Multiplies isbn digits by 1 and 3
+            if i % 2 != 0:
+                i = int(isbn[i]) * 3
+                total.append(int(i))
+            else:
+                i = int(isbn[i]) * 1
+                total.append(int(i))
+        #Finds the sum of isbn digits
+        x = sum(total)
+
+        #If sum / 10 not remainder 0, menu is output.
+        if x % 10 != 0:
+            print("Invalid ISBN!")
+            printMenu()
+        #Else, adds isbn to list of books
+        else:
+            oneNewBook = [isbn, name, author, edition, []]
+            allBooks.append(oneNewBook)
+            print("A new book is added successfully.")
+
+
+    #Function for borrowing books
+    def borrowBooks():
+        borrower = input("Enter the borrower name> ")
+        search = input("search term> ")
+
+        count = 0
+
+        #If * in input, * removed and word searched in list of books
+        if search[-1] == "*":
+            search = search[:-1]
+            search = search.lower()
+            for i in allBooks:
+                # If title in sublist in allBooks list, book borrowed
+                if search in i[1].lower():
+                    count += 1
+                    if i[0] not in borrowedISBN:
+                        i[-1].append(borrower)
+                        borrowedISBN.append(i[0])
+                        print("-" + '"%s"'%(i[1]) + " is borrowed")
+                    else:
+                        print("No books found!")
+            if count == 0:
+                print("No Books found!")
+
+        # If % in input, % removed and searched as first word of title
+        elif search[-1] == "%":
+             search = search[:-1]
+             search = search.lower()
+             for i in allBooks:
+                 # If title in sublist in allBooks list,, book borrowed
+                 if i[1].lower().startswith(search.lower()):
+                     count += 1
+                     if i[0] not in borrowedISBN:
+                        i[-1].append(borrower)
+                        borrowedISBN.append(i[0])
+                        print("-" + '"%s"'%(i[1]) + " is borrowed")
+                     else:
+                         print("No books found!")
+             if count == 0:
+                print("No Books found!")
+
+        # Searches for Title in list of books
+        else:
+            search = search.lower()
+            for i in allBooks:
+                #If title in sublist in allBooks list, book borrowed
+                if search == i[1].lower():
+                    count += 1
+                    if i[0] not in borrowedISBN:
+                        i[-1].append(borrower)
+                        borrowedISBN.append(i[0])
+                        print("-" + '"%s"'%(i[1]) + " is borrowed")
+                    else:
+                        print("No books found!")
+            if count == 0:
+                print("No Books found!")
+
+
+    #Function for returning books
+    def returnBooks():
+        #If input isbn in list of borrowed books, book returned
+        returnInput = input("ISBN> ")
+        #If isbn in borrowed book list, book returned
+        if returnInput in borrowedISBN:
+            for i in allBooks:
+                if returnInput in i[0]:
+                    print('"%s"'%(i[1]) + " is returned")
+                    #isbn removed from borrowed isbn list
+                    borrowedISBN.remove(returnInput)
+        else:
+            print("No book is found!")
+
+
+    #Function for listing book information and availablity
+    def listBooks():
+        for i in allBooks:
+            print("---------------")
+            #prints availability by checking if isbn exists in list of borrowed books
+            if i[0] in borrowedISBN:
+                print("[Unavailable]")
+            else:
+                print("[Available]")
+            #Prints all book information
+            print(str(i[1]) + " - " + str(i[2]))
+            print("E: " + str(i[3]) + " ISBN: " + str(i[0]))
+            print("Borrowed by: " + str(i[4]))
+
+
+    #Function for ending the program
+    def exit():
+        print("$$$$$$$$ FINAL LIST OF BOOKS $$$$$$$$")
+        listBooks()
+
+
+    #Function for Main Menu
+    def printMenu():
+
+        #list of valid inputs
+        menuList = ['1','2','3','4','5','A','a','r','R','t','T','L','l','x','X']
+        #While loop for menu.
+        while True:
+            print('\n######################')
+            print("1: (A)dd a new book. ")
+            print("2: Bo(r)row books.")
+            print("3: Re(t)urn a book.")
+            print("4: (L)ist all books.")
+            print("5: E(x)it")
+            print('######################\n')
+
+            #If input not in valid input list, shows menu again
+            x = input("Your selection> ")
+            if x in menuList:
+                break
+            else:
+                print("Wrong selection! Please selection a valid option.")
+
+        #If x in this list, calls addBooks function
+        if x in ['1','a','A']:
+            addBooks()
+            printMenu()
+        # If x in this list, calls borrowBooks function
+        elif x in ['2','r','R']:
+            borrowBooks()
+            printMenu()
+        # If x in this list, calls borrowBooks function
+        elif x in ['3','t','T']:
+            returnBooks()
+            printMenu()
+        # If x in this list, calls borrowBooks function
+        elif x in ['4','l','L']:
+            listBooks()
+            printMenu()
+        # If x in this list, calls borrowBooks function
+        elif x in ['5','x','X']:
+            exit()
+
+
+
+    #Calls printMenu function
+    printMenu()
+
+#Calls start function
+start()
